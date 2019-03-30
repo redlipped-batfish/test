@@ -19,5 +19,5 @@ databaseMiddleware.getUserProjects = (req, res, next) => {
   await client.end();
   next();
 };
-cer
+
 module.exports = databaseMiddleware;

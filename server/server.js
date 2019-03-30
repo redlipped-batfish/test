@@ -3,9 +3,14 @@ const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const randomstring = require('randomstring');
-const { getAccessToken, checkSession } = require(authenticationMiddleware);
-const { saveUserInfo, getUserProjects } = require(databaseMiddleware);
+const {
+  getAccessToken,
+  checkSession,
+} = require('/middleware/authenticationMiddleware');
+const {
+  saveUserInfo,
+  getUserProjects,
+} = require('/middleware/databaseMiddleware');
 const port = 3000;
 
 // global variables
