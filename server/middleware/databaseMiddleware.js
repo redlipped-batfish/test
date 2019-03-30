@@ -14,7 +14,7 @@ databaseMiddleware.saveUserInfo = (req, res, next) => {
 databaseMiddleware.getUserProjects = (req, res, next) => {
   await client.connect();
   let cookie = req.cookie;
-  let email = await client.query(`SELECT email FROM users WHERE sessionid=${res.cookie}`)
+  res.body.email = await client.query(`SELECT email FROM users WHERE sessionid=${res.cookie}`)
   res.body.result = await client.querry(`SELECT projectname, id FROM users WHERE email=${res.body.email}`);
   await client.end();
   next();

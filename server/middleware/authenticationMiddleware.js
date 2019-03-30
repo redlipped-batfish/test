@@ -2,6 +2,20 @@ const authenticationMiddleware = {};
 const queryString = require('querystring');
 
 authenticationMiddleware.checkSession = (req, res, next) => {
+  const csrfString = randomstring.generate({
+    length: 12,
+    charset: 'alphanumeric'
+  });
+  const githubURI = 'https://github.comn/login/oauth/authorize?' + querystring.stringify({
+    client_id = process.env.CLIENT_ID,
+    redirect_url: '/authorize',
+    state: csrfString,
+    scope: 'user'
+  });
+  next();
+};
+
+authenticationMiddleware.checkSession = (req, res, next) => {
   next();
 };
 
@@ -36,9 +50,6 @@ authenticationMiddleware.getAccessToken = (req, res, next) => {
       console.log(queryString.parse(response));
       res.body.accessToken = queryString.parse(response).access_token;
       next();
-      // response should have the access token
-      // save access token
-      // create session for user and save on database
     });
   } else return res.status(404).send();
 };
@@ -51,6 +62,7 @@ authenticationMiddleware.getUserInfo = (req, res, next) => {
     },
   }).then(response => {
     console.log(response);
+    // save user info on req.body
     next();
   });
 };
