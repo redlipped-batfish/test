@@ -6,11 +6,13 @@ const cookieParser = require('cookie-parser');
 const {
   getAccessToken,
   checkSession,
-} = require('/middleware/authenticationMiddleware');
+  generateRedirectURI,
+  getUserInfo,
+} = require('./middleware/authenticationMiddleware');
 const {
   saveUserInfo,
   getUserProjects,
-} = require('/middleware/databaseMiddleware');
+} = require('./middleware/databaseMiddleware');
 const port = 3000;
 
 // global variables
@@ -19,7 +21,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.static(path.resolve(__dirname, '../build')));
-require('dotenv').config();
 
 // end points
 
@@ -28,7 +29,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', generateRedirectURI, (req, res) => {
-  res.redirect(githubURI);
+  res.redirect(res.body.githubURI);
 });
 
 app.get('/authorize', getAccessToken, getUserInfo, saveUserInfo, (req, res) => {

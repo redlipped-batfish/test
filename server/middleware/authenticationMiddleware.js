@@ -2,17 +2,22 @@ const authenticationMiddleware = {};
 const queryString = require('querystring');
 const randomstring = require('randomstring');
 
-authenticationMiddleware.checkSession = (req, res, next) => {
+require('dotenv').config();
+
+authenticationMiddleware.generateRedirectURI = (req, res, next) => {
   const csrfString = randomstring.generate({
     length: 12,
-    charset: 'alphanumeric'
+    charset: 'alphanumeric',
   });
-  const githubURI = 'https://github.comn/login/oauth/authorize?' + querystring.stringify({
-    client_id = process.env.CLIENT_ID,
-    redirect_url: '/authorize',
-    state: csrfString,
-    scope: 'user'
-  });
+  const githubURI =
+    'https://github.comn/login/oauth/authorize?' +
+    querystring.stringify({
+      client_id: process.env.CLIENT_ID,
+      redirect_url: '/authorize',
+      state: csrfString,
+      scope: 'user',
+    });
+  res.body.githubURI = githubURI;
   next();
 };
 
@@ -68,4 +73,4 @@ authenticationMiddleware.getUserInfo = (req, res, next) => {
   });
 };
 
-module.exports = sessionMiddleware;
+module.exports = authenticationMiddleware;
