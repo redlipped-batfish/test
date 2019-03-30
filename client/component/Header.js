@@ -1,10 +1,20 @@
 import React, { Component } from 'react';
+import LoginButton from './LoginButton';
+import {
+  BrowserRouter,
+  Route,
+  Link,
+  Redirect,
+  withRouter,
+} from 'react-router-dom';
 
 class Header extends Component {
   render() {
     return (
       <div>
-        <div>Hello i am a header</div>
+        {/* <Link to="/login">Login Page</Link> */}
+        {/* <Link to="/test">Testing Testing Page</Link> */}
+        <LoginButton />
       </div>
     );
   }
