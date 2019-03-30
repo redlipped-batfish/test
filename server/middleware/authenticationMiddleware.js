@@ -1,5 +1,6 @@
 const authenticationMiddleware = {};
 const queryString = require('querystring');
+const randomstring = require('randomstring');
 
 authenticationMiddleware.checkSession = (req, res, next) => {
   const csrfString = randomstring.generate({

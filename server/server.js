@@ -1,9 +1,8 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const bodyparser = require('body-parser');
+const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const querystring = require('querystring');
 const randomstring = require('randomstring');
 const { getAccessToken, checkSession } = require(authenticationMiddleware);
 const { saveUserInfo, getUserProjects } = require(databaseMiddleware);
