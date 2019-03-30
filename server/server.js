@@ -20,6 +20,19 @@ require('dotenv').config();
 
 // end points
 
+//replace this with actual OAUTH stuff
+app.get('/login', (req, res) => {
+  console.log('user attempted login');
+  res.header('Access-Control-Allow-Origin', '*');
+  res.json('login testing');
+});
+
+app.get('/test', (req, res) => {
+  console.log('hit test');
+  res.header('Access-Control-Allow-Origin', '*');
+  res.json('catman');
+});
+
 app.get('/', (req, res) => {
   return res.sendFile(path.join(__dirname, '../build/index.html'));
 });
