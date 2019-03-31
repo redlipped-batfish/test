@@ -39,12 +39,16 @@ class Demo extends Component {
       requestBody: '',
       expectedResStatusCode: '',
       expectedResBody: '',
+      testComplete: false,
+      testResult: null,
+      testResponse: null,
     };
     this.handleChange = this.handleChange.bind(this);
   }
   handleChange(event, name) {
     const newState = {};
     newState[name] = event.target.value;
+    newState.testComplete = false;
     this.setState(newState);
     console.log(this.state);
   }
@@ -52,45 +56,79 @@ class Demo extends Component {
   handleDropdownChange(event, name) {
     const newState = {};
     newState[name] = event.target.textContent;
+    newState.testComplete = false;
     this.setState(newState);
     console.log(this.state);
   }
 
   runTest(state) {
-    console.log('i am some function');
     console.log('state:', state);
-    fetch('http://localhost:3000/test', {
-      method: 'GET', // *GET, POST, PUT, DELETE, etc.
-      mode: 'cors', // no-cors, cors, *same-origin
-      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: 'same-origin', // include, *same-origin, omit
-      headers: {
-        'Content-Type': 'application/json',
-        // "Content-Type": "application/x-www-form-urlencoded",
-      },
-      redirect: 'follow', // manual, *follow, error
-      referrer: 'no-referrer', // no-referrer, *client
-      // body: JSON.stringify('hellowww'), // body data type must match "Content-Type" header
-    })
-      // fetch('http://localhost:3000/test', {
-      //   method: 'GET',
-      //   mode: 'cors',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      // })
-      .then(stream => stream.json())
-      .then(data => console.log('testingdata', data));
-  }
 
-  redirectGithub() {
-    console.log('i am some function');
-    fetch('http://localhost:3000/login')
-      .then(stream => stream.json())
-      .then(data => console.log(data));
+    let testStatusCode = null;
+    let testResponseBody = null;
+
+    fetch(this.state.url + this.state.endpoint, {
+      method: this.state.requestType,
+      headers: {
+        'Content-Type': this.state.contentType,
+      },
+      body: this.state.requestType === 'GET' ? null : this.state.requestBody,
+    })
+      .then(response => {
+        testStatusCode = response.status;
+        return response.json();
+      })
+      .then(body => {
+        testResponseBody = body;
+
+        if (
+          testStatusCode ===
+            parseInt(this.state.expectedResStatusCode.slice(0, 3)) &&
+          testResponseBody === this.state.expectedResBody
+        ) {
+          this.setState({
+            testComplete: true,
+            testResult: true,
+            testResponse: testResponseBody,
+          });
+          console.log('successful test!');
+        } else {
+          this.setState({
+            testComplete: true,
+            testResult: false,
+            testResponse: testResponseBody,
+          });
+          console.log('test failed!');
+        }
+      });
   }
 
   render() {
+    //scan the state for test state(s)
+    //generate an array of divs to add to the table
+    //IN THE DEMO THERE IS ONLY ONE ALLOWED TEST, SO NO ARRAYS IN STATE
+    let testsArr = [];
+    if (this.state.testComplete) {
+      let color = null;
+      let name = null;
+      let result = null;
+      color = this.state.testResult ? 'green' : 'red';
+      name = this.state.testResult ? 'check' : 'close';
+      result = this.state.testResult ? 'positive' : 'negative';
+      console.log(name, color);
+      testsArr.push(
+        <Table.Row key={1}>
+          <Table.HeaderCell>{this.state.endpoint}</Table.HeaderCell>
+          <Table.HeaderCell>{this.state.requestType}</Table.HeaderCell>
+          <Table.HeaderCell>{this.state.expectedResBody}</Table.HeaderCell>
+          <Table.HeaderCell>{this.state.testResponse}</Table.HeaderCell>
+          <Table.HeaderCell>
+            <Icon name={name} color={color} inverted circular />
+          </Table.HeaderCell>
+        </Table.Row>,
+      );
+    }
+
     return (
       <div>
         <Container text>
@@ -105,11 +143,7 @@ class Demo extends Component {
                 }}
               />
             </Form.Field>
-            <Button
-              onClick={() => this.runTest(this.state)}
-              inline
-              type="submit"
-            >
+            <Button onClick={() => this.runTest(this.state)} type="submit">
               Run Test
             </Button>
             <hr />
@@ -124,39 +158,28 @@ class Demo extends Component {
                 placeholder="Insert Endpoint URL here (e.g. /endpoint)"
               />
             </Form.Field>
-            {/* <Form.Field label="Request Type" control="select">
-              <option value="get">GET</option>
-              <option value="post">POST</option>
-            </Form.Field> */}
-            <Form.Field>
-              <label>Content-Type:</label>
-              <Menu compact>
-                <Dropdown
-                  placeholder="Content Type"
-                  options={contentTypes}
-                  selection
-                  value={this.state.contentType}
-                  onChange={event => {
-                    this.handleDropdownChange(event, 'contentType');
-                  }}
-                />
-              </Menu>
-            </Form.Field>
-            <Form.Field>
-              <label>Request Type:</label>
-              <Menu compact>
-                <Dropdown
-                  placeholder="Request Type"
-                  options={requestTypes}
-                  selection
-                  value={this.state.requestType}
-                  onChange={event => {
-                    this.handleDropdownChange(event, 'requestType');
-                  }}
-                />
-              </Menu>
-              {/* <input placeholder="Value" /> */}
-            </Form.Field>
+            <Form.Group widths="equal">
+              <Form.Select
+                fluid
+                label="Content-Type:"
+                options={contentTypes}
+                placeholder="Content-Type"
+                value={this.state.contentType}
+                onChange={event => {
+                  this.handleDropdownChange(event, 'contentType');
+                }}
+              />
+              <Form.Select
+                fluid
+                label="Request Type:"
+                options={requestTypes}
+                placeholder="Request Type"
+                value={this.state.requestType}
+                onChange={event => {
+                  this.handleDropdownChange(event, 'requestType');
+                }}
+              />
+            </Form.Group>
             <Form.Field>
               <label>Request Body:</label>
               <input
@@ -169,19 +192,16 @@ class Demo extends Component {
             </Form.Field>
             <Form.Field>
               <Form.Field>
-                <label>Expected Response Status Code:</label>
-                <Menu compact>
-                  <Dropdown
-                    placeholder="Expected Status Code"
-                    options={statusCodes}
-                    selection
-                    value={this.state.expectedResStatusCode}
-                    onChange={event => {
-                      this.handleDropdownChange(event, 'expectedResStatusCode');
-                    }}
-                  />
-                </Menu>
-                {/* <input placeholder="Value" /> */}
+                <Form.Select
+                  fluid
+                  label="Expected Response Status Code:"
+                  options={statusCodes}
+                  placeholder="Expected Status Code"
+                  value={this.state.expectedResStatusCode}
+                  onChange={event => {
+                    this.handleDropdownChange(event, 'expectedResStatusCode');
+                  }}
+                />
               </Form.Field>
               <label>Expected Response Body:</label>
               <input
@@ -207,9 +227,10 @@ class Demo extends Component {
                 <Table.HeaderCell>Method</Table.HeaderCell>
                 <Table.HeaderCell>Expected Response</Table.HeaderCell>
                 <Table.HeaderCell>Actual Response</Table.HeaderCell>
+                <Table.HeaderCell />
               </Table.Row>
+              {testsArr}
             </Table.Header>
-
             <Table.Body />
           </Table>
         </Container>
