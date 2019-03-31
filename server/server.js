@@ -3,7 +3,6 @@ const app = express();
 const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const {
   getAccessToken,
@@ -32,9 +31,9 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', generateRedirectURI, (req, res) => {
-  console.log('uriii', res.githubURI);
+  app.locals.csrfString = res.locals.csrfString;
   res.header('Access-Control-Allow-Origin', '*');
-  res.redirect(res.githubURI);
+  return res.send(res.locals.githubURI);
 });
 
 app.get(
@@ -44,7 +43,7 @@ app.get(
   createSession,
   saveUserInfo,
   (req, res) => {
-    res.redirect(); // redirect to index.html
+    res.redirect('http://localhost:3000'); // redirect to index.html
   },
 );
 
@@ -53,11 +52,11 @@ app.get('/isAuthenticated', checkSession, getUserProjects, (req, res) => {
 });
 
 app.get('/userInfo', checkSession, getUserProjects, (req, res) => {
-  next();
+  // next();
 });
 
 app.post('/userInfo', (req, res) => {
-  next();
+  // next();
 });
 
 //ADDED BY CHRISTIAN FOR TESTING FRONT END
@@ -72,3 +71,4 @@ app.post('/test', (req, res) => {
 });
 
 app.listen(port);
+module.exports = app;

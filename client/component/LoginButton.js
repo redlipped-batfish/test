@@ -6,9 +6,13 @@ class LoginButton extends Component {
   //replace this stuff with actual OAUTH stuff
   redirectGithub() {
     console.log('i am some function');
-    fetch('http://localhost:3000/login')
-      .then(stream => stream.json())
-      .then(data => console.log(data));
+    fetch('http://localhost:3000/login', { mode: 'cors' })
+      .then(data => {
+        return data.text();
+      })
+      .then(result => {
+        window.location.href = result;
+      });
   }
 
   render() {

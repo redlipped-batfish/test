@@ -2,15 +2,12 @@ const authenticationMiddleware = {};
 const queryString = require('querystring');
 const randomstring = require('randomstring');
 const fetch = require('node-fetch');
+const app = require('../server');
 
 require('dotenv').config();
 
-const csrfString = randomstring.generate({
-  length: 12,
-  charset: 'alphanumeric',
-});
-
 authenticationMiddleware.generateRedirectURI = (req, res, next) => {
+  console.log(res.locals.csrfString);
   const githubURI =
     'https://github.com/login/oauth/authorize?' +
     queryString.stringify({
@@ -19,19 +16,12 @@ authenticationMiddleware.generateRedirectURI = (req, res, next) => {
       state: 'hello',
       scope: 'read:user',
     });
-  console.log('res github URI');
-  res.githubURI = githubURI;
-  console.log('git hub:....................', res.githubURI);
-  // return;
-  next();
+  res.locals.githubURI = githubURI;
+  console.log(res.locals.githubURI);
+  return next();
 };
 
 authenticationMiddleware.checkSession = (req, res, next) => {
-  next();
-};
-
-authenticationMiddleware.createSession = (req, res, next) => {
-  res.cookie('secret', csrfString);
   next();
 };
 
@@ -62,27 +52,40 @@ authenticationMiddleware.getAccessToken = (req, res, next) => {
         return data.json();
       })
       .then(data => {
-        res.accessToken = data.access_token;
-        console.log('access toke is: ', res.accessToken);
+        res.locals.accessToken = data.access_token;
         return next();
       });
-  } else return res.status(404).send();
+  } else {
+    console.log('state not equal');
+    return res.status(404).send();
+  }
 };
 
 authenticationMiddleware.getUserInfo = (req, res, next) => {
   fetch('https://api.github.com/user', {
     headers: {
-      Authorization: 'token ' + res.accessToken,
+      Authorization: 'token ' + res.locals.accessToken,
       'User-Agent': 'Login-App',
     },
   })
     .then(response => {
       return response.json();
-      // save user info res
     })
     .then(data => {
-      console.log(data);
+      let { login, avatar_url, name, email, id } = data;
+      console.log('This is data from github user:', data);
+      res.locals = { ...res.locals, login, avatar_url, name, email, id };
+      return next();
     });
+};
+
+authenticationMiddleware.createSession = (req, res, next) => {
+  res.locals.csrfString = randomstring.generate({
+    length: 12,
+    charset: 'alphanumeric',
+  });
+  res.cookie('secret', res.locals.csrfString, { maxAge: '3600000' });
+  next();
 };
 
 module.exports = authenticationMiddleware;
