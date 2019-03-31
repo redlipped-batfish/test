@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const {
@@ -16,7 +17,7 @@ const {
 const port = 3000;
 
 // global variables
-
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
@@ -46,6 +47,17 @@ app.get('/userInfo', checkSession, getUserProjects, (req, res) => {
 
 app.post('/userInfo', (req, res) => {
   next();
+});
+
+//ADDED BY CHRISTIAN FOR TESTING FRONT END
+app.get('/test', (req, res) => {
+  console.log('received test fetch get');
+  res.json('success');
+});
+
+app.post('/test', (req, res) => {
+  console.log('received test fetch POST');
+  res.json('success');
 });
 
 app.listen(port);
