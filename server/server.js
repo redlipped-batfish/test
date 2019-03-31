@@ -3,12 +3,14 @@ const app = express();
 const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const {
   getAccessToken,
   checkSession,
   generateRedirectURI,
   getUserInfo,
+  createSession,
 } = require('./middleware/authenticationMiddleware');
 const {
   saveUserInfo,
@@ -30,12 +32,21 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', generateRedirectURI, (req, res) => {
-  res.redirect(res.body.githubURI);
+  console.log('uriii', res.githubURI);
+  res.header('Access-Control-Allow-Origin', '*');
+  res.redirect(res.githubURI);
 });
 
-app.get('/authorize', getAccessToken, getUserInfo, saveUserInfo, (req, res) => {
-  res.redirect();
-});
+app.get(
+  '/authorize',
+  getAccessToken,
+  getUserInfo,
+  createSession,
+  saveUserInfo,
+  (req, res) => {
+    res.redirect(); // redirect to index.html
+  },
+);
 
 app.get('/isAuthenticated', checkSession, getUserProjects, (req, res) => {
   res.json();
