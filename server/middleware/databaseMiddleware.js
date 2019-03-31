@@ -5,9 +5,10 @@ const client = new Client();
 
 databaseMiddleware.saveUserInfo = async (req, res, next) => {
   await client.connect();
-  const { email, token } = req.body;
-  const result = await client.query(
-    `INSERT INTO (email, accessToken) VALUES (${email}, ${token});`,
+  const { email, accessToken } = res;
+  console.log('cooookkie', res.cookie);
+  await client.query(
+    `INSERT INTO (email, sessionid, accesstoken) VALUES (${email}, ${sessionid}, ${accessToken});`,
   );
   await client.end();
   next();
@@ -19,8 +20,8 @@ databaseMiddleware.getUserProjects = async (req, res, next) => {
   res.body.email = await client.query(
     `SELECT email FROM users WHERE sessionid=${res.cookie}`,
   );
-  res.body.result = await client.querry(
-    `SELECT projectname, id FROM users WHERE email=${res.body.email}`,
+  res.body.result = await client.query(
+    `SELECT projectname, id FROM projects WHERE email=${res.body.email}`,
   );
   await client.end();
   next();

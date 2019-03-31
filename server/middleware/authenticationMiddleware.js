@@ -1,23 +1,28 @@
 const authenticationMiddleware = {};
 const queryString = require('querystring');
 const randomstring = require('randomstring');
+const fetch = require('node-fetch');
 
 require('dotenv').config();
 
+const csrfString = randomstring.generate({
+  length: 12,
+  charset: 'alphanumeric',
+});
+
 authenticationMiddleware.generateRedirectURI = (req, res, next) => {
-  const csrfString = randomstring.generate({
-    length: 12,
-    charset: 'alphanumeric',
-  });
   const githubURI =
-    'https://github.comn/login/oauth/authorize?' +
-    querystring.stringify({
+    'https://github.com/login/oauth/authorize?' +
+    queryString.stringify({
       client_id: process.env.CLIENT_ID,
-      redirect_url: '/authorize',
-      state: csrfString,
-      scope: 'user',
+      redirect_uri: process.env.HOST + '/authorize',
+      state: 'hello',
+      scope: 'read:user',
     });
-  res.body.githubURI = githubURI;
+  console.log('res github URI');
+  res.githubURI = githubURI;
+  console.log('git hub:....................', res.githubURI);
+  // return;
   next();
 };
 
@@ -25,15 +30,17 @@ authenticationMiddleware.checkSession = (req, res, next) => {
   next();
 };
 
+authenticationMiddleware.createSession = (req, res, next) => {
+  res.cookie('secret', csrfString);
+  next();
+};
+
 authenticationMiddleware.getAccessToken = (req, res, next) => {
   console.log('request sent by Github:');
-  console.log('req.query');
+  console.log(req.query);
+  console.log('uri', process.env.HOST + '/authorize');
   const { code, state } = req.query;
-  const csrfString = randomstring.generate({
-    length: 12,
-    charset: 'alphanumeric',
-  });
-  if (state === testState) {
+  if (state === 'hello') {
     fetch(
       'https://github.com/login/oauth/access_token?' +
         queryString.stringify({
@@ -41,36 +48,41 @@ authenticationMiddleware.getAccessToken = (req, res, next) => {
           client_secret: process.env.CLIENT_SECRET,
           code: code,
           redirect_uri: process.env.HOST + '/authorize',
-          state: csrfString,
+          state: state,
         }),
       {
         method: 'POST',
-        credentials: 'same-origin',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
+          Accept: 'application/json',
         },
-        body: JSON.stringify(data),
       },
-    ).then(reseponse => {
-      console.log(response);
-      console.log(queryString.parse(response));
-      res.body.accessToken = queryString.parse(response).access_token;
-      next();
-    });
+    )
+      .then(data => {
+        return data.json();
+      })
+      .then(data => {
+        res.accessToken = data.access_token;
+        console.log('access toke is: ', res.accessToken);
+        return next();
+      });
   } else return res.status(404).send();
 };
 
 authenticationMiddleware.getUserInfo = (req, res, next) => {
   fetch('https://api.github.com/user', {
     headers: {
-      Authorization: 'token' + req.body.accessToken,
+      Authorization: 'token ' + res.accessToken,
       'User-Agent': 'Login-App',
     },
-  }).then(response => {
-    console.log(response);
-    // save user info on req.body
-    next();
-  });
+  })
+    .then(response => {
+      return response.json();
+      // save user info res
+    })
+    .then(data => {
+      console.log(data);
+    });
 };
 
 module.exports = authenticationMiddleware;
