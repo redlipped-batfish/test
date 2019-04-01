@@ -1,11 +1,11 @@
 const databaseMiddleware = {};
 const pg = require('pg');
-// const uri = 'postgres://admin:password123@localhost/endpoint';
+const uri = 'postgres://admin:password123@localhost/endpoint';
 // const uri = 'postgres://weepwqao:rLnedJ7IK8tJuFGMaFrVLDf_WhjgDL0n@isilo.db.elephantsql.com:5432/weepwqao';
-const uri = process.env.DATABASE_URL;
+// const uri = process.env.DATABASE_URL;
 
 databaseMiddleware.saveUserInfo = async (req, res, next) => {
-  // Future improvement: to decrease
+  // Future improvement: to decrease the need to insert when the user is already created and to update user information if it changes.
   const client = new pg.Client(uri);
   await client.connect(error => {
     if (error) return console.error('could not connect to postgres', err);

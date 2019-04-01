@@ -51,13 +51,13 @@ app.get('/isAuthenticated', checkSession, getUserProjects, (req, res) => {
   res.json();
 });
 
-app.get('/userInfo', checkSession, getUserProjects, (req, res) => {
-  // next();
-});
+// app.get('/userInfo', checkSession, getUserProjects, (req, res) => {
+//   // next();
+// });
 
-app.post('/userInfo', (req, res) => {
-  // next();
-});
+// app.post('/userInfo', (req, res) => {
+//   // next();
+// });
 
 //ADDED BY CHRISTIAN FOR TESTING FRONT END
 app.get('/test', (req, res) => {

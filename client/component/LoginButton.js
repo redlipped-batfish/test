@@ -3,7 +3,7 @@ import { Button, Icon } from 'semantic-ui-react';
 import fetch from 'isomorphic-fetch';
 
 class LoginButton extends Component {
-  //replace this stuff with actual OAUTH stuff
+  // OAUTH process
   redirectGithub() {
     console.log('i am some function');
     fetch('http://localhost:3000/login', { mode: 'cors' })
