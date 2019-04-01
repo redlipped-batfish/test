@@ -3,6 +3,7 @@ import Header from '../component/Header';
 import Demo from '../component/Demo';
 import PrivateRoute from '../component/PrivateRoute';
 import Dashboard from '../component/Dashboard';
+import { Button } from 'semantic-ui-react';
 import {
   Route,
   Link,
@@ -72,9 +73,10 @@ class Main extends Component {
   render() {
     return (
       <div>
-        hello i am main
         <Header />
-        <Link to="/">Go to root</Link>
+        <Button style={{ float: 'right' }}>
+          <Link to="/">Go to projects</Link>
+        </Button>
         <Switch>
           <Route path="/demo" component={Demo} />
           <PrivateRoute
