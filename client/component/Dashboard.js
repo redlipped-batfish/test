@@ -240,7 +240,7 @@ class Dashboard extends Component {
 
     return (
       <div>
-        <h3> I am a Dashboard! </h3>
+        {/* <h3> I am a Dashboard! </h3> */}
         <Container text>
           <Form>
             <Form.Field>

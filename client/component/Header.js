@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import LoginButton from './LoginButton';
+import { Image } from 'semantic-ui-react';
 import {
   BrowserRouter,
   Route,
