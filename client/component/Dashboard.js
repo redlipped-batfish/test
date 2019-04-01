@@ -34,6 +34,7 @@ class Dashboard extends Component {
   constructor() {
     super();
     this.state = {
+      projects: {},
       url: '',
       endpoint: '',
       contentType: '',
@@ -47,6 +48,106 @@ class Dashboard extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
   }
+
+  componentDidMount() {
+    console.log(this.props);
+    this.setState({ projects: this.props.projects });
+  }
+
+  runAllTests(state) {
+    //replace the following two lines with logic that determines which project is the currently selected project
+    console.log('This are the projects:', state.projects);
+    const firstProject = Object.keys(state.projects)[0];
+    const tests = state.projects[firstProject];
+
+    let testStatusCode = null;
+    let testResponseBody = null;
+
+    const promiseArr = [];
+    const testsArray = [];
+    for (let test of tests) {
+      //TODO refactor this to use Promise.all instead of this pseudo-synchronous await/fetch
+      //--------------------------------------------------------------------------------
+      // promiseArr.push(
+      //   fetch(test.url + test.endpoint, {
+      //     method: test.requestType,
+      //     headers: {
+      //       'Content-Type': test.contentType,
+      //     },
+      //     body: test.requestType === 'GET' ? null : test.requestBody,
+      //   }),
+      // );
+      // .then(response => {
+      //   testStatusCode = response.status;
+      //   return response.json();
+      // })
+      // .then(body => {
+      //   testResponseBody = body;
+      //   if (
+      //     testStatusCode ===
+      //       parseInt(test.expectedResStatusCode.slice(0, 3)) &&
+      //     testResponseBody === test.expectedResBody
+      //   ) {
+      //     console.log('successful test!');
+      //     testsArray.push({
+      //       ...test,
+      //       testComplete: true,
+      //       testResult: true,
+      //       testResponse: testResponseBody,
+      //     });
+      //   } else {
+      //     console.log('test failed!');
+      //     testsArray.push({
+      //       ...test,
+      //       testComplete: true,
+      //       testResult: false,
+      //       testResponse: testResponseBody,
+      //     });
+      //   }
+      // });
+    }
+    // Promise.all(promiseArr)
+    //   .then(data => {
+    //     data.forEach(element => {
+    //       // element.body.json();
+    //       console.log('catman heeeey', element);
+    //     });
+    //     return data;
+    //   })
+    //   .then(tests =>
+    //     tests.forEach(test => {
+    //       console.log(test);
+    //       testResponseBody = test.body;
+
+    //       if (
+    //         testStatusCode ===
+    //           parseInt(test.expectedResStatusCode.slice(0, 3)) &&
+    //         testResponseBody === test.expectedResBody
+    //       ) {
+    //         console.log('successful test!');
+    //         testsArray.push({
+    //           ...test,
+    //           testComplete: true,
+    //           testResult: true,
+    //           testResponse: testResponseBody,
+    //         });
+    //       } else {
+    //         console.log('test failed!');
+    //         testsArray.push({
+    //           ...test,
+    //           testComplete: true,
+    //           testResult: false,
+    //           testResponse: testResponseBody,
+    //         });
+    //       }
+    //     }),
+    //   );
+    const newState = { ...state };
+    newState.firstProject = testsArray;
+    // this.setState(newState);
+    console.log('This are the results:', testsArray);
+  }
+
   handleChange(event, name) {
     const newState = {};
     newState[name] = event.target.value;
@@ -110,25 +211,31 @@ class Dashboard extends Component {
     //generate an array of divs to add to the table
     //IN THE DEMO THERE IS ONLY ONE ALLOWED TEST, SO NO ARRAYS IN STATE
     let testsArr = [];
-    if (this.state.testComplete) {
+    if (true) {
+      console.log('props in render catman ', this.props);
       let color = null;
       let name = null;
       let result = null;
-      color = this.state.testResult ? 'green' : 'red';
-      name = this.state.testResult ? 'check' : 'close';
-      result = this.state.testResult ? 'positive' : 'negative';
       console.log(name, color);
-      testsArr.push(
-        <Table.Row key={1}>
-          <Table.HeaderCell>{this.state.endpoint}</Table.HeaderCell>
-          <Table.HeaderCell>{this.state.requestType}</Table.HeaderCell>
-          <Table.HeaderCell>{this.state.expectedResBody}</Table.HeaderCell>
-          <Table.HeaderCell>{this.state.testResponse}</Table.HeaderCell>
-          <Table.HeaderCell>
-            <Icon name={name} color={color} inverted circular />
-          </Table.HeaderCell>
-        </Table.Row>,
-      );
+      let key = 1;
+      for (let test of this.props.projects[1]) {
+        console.log('sdhfkjfdjksfskjf', test);
+        key++;
+        color = test.testResult ? 'green' : 'red';
+        name = test.testResult ? 'check' : 'close';
+        result = test.testResult ? 'positive' : 'negative';
+        testsArr.push(
+          <Table.Row key={key}>
+            <Table.HeaderCell>{test.endpoint}</Table.HeaderCell>
+            <Table.HeaderCell>{test.requesttype}</Table.HeaderCell>
+            <Table.HeaderCell>{'legit test'}</Table.HeaderCell>
+            <Table.HeaderCell>{'legit test'}</Table.HeaderCell>
+            <Table.HeaderCell>
+              <Icon name={'check'} color={'green'} inverted circular />
+            </Table.HeaderCell>
+          </Table.Row>,
+        );
+      }
     }
 
     return (
@@ -148,6 +255,9 @@ class Dashboard extends Component {
             </Form.Field>
             <Button onClick={() => this.runTest(this.state)} type="submit">
               Run Test
+            </Button>
+            <Button onClick={() => this.runAllTests(this.state)} type="submit">
+              Run All
             </Button>
             <hr />
             <br />

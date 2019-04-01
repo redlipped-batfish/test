@@ -31,7 +31,7 @@ class Main extends Component {
         console.log(data);
         // deconstructed and parsed server data
         let { isAuthenticated, tests } = data;
-        let projects = {};
+        let projects = { 1: [] };
         tests.forEach(test => {
           let {
             test_id,
@@ -43,9 +43,10 @@ class Main extends Component {
             expectedbody,
             project_id,
           } = test;
-          if (!Object.keys(projects).includes(project_id)) {
-            projects[project_id] = [];
-          }
+          // if (!Object.keys(projects).includes(project_id)) {
+          //   console.log('catman', projects);
+          //   projects[project_id] = [];
+          // }
           projects[project_id].push({
             test_id,
             url,
@@ -59,7 +60,7 @@ class Main extends Component {
         });
         // set authenticated property to what the server returns
         this.setState({ authenticated: isAuthenticated, projects });
-        console.log(this.state.authenticated);
+        console.log('this is the parsed projects', this.state.projects);
       });
   }
 
