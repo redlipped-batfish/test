@@ -1,4 +1,4 @@
-
+![alt text](https://imgur.com/a/PmKRFjW)
 
 ## Instructions for testing of Endpoint with localhost:3000 and a locally installed postgresql database
 
