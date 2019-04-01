@@ -1,14 +1,14 @@
 ## Instructions for testing of Endpoint with localhost:3000 and a locally installed postgresql database
 
 
-#### IN TERMINAL, WITH POSTGRES INSTALLED GLOBALLY:
+#### In terminal, with postgresql installed globally
 
 
 createdb endpoint
 
 psql endpoint
 
-#### IN PSQL CLI:
+#### In psql command line interface:
 
 
 create role admin with login password 'password123';
@@ -33,6 +33,8 @@ create table projects (project_id SERIAL PRIMARY KEY, project_name VARCHAR, user
 
 create table tests (test_id SERIAL PRIMARY KEY, url VARCHAR, endpoint VARCHAR, contentType VARCHAR, requestType VARCHAR, requestBody VARCHAR, expectedResStatusCode VARCHAR, expectedResBody VARCHAR, project_id INTEGER REFERENCES projects(project_id));
 
+#### Now, before continuing, run the project in the browser (npm run dev) and click on the github OAuth button, this will create a user in the db once you are redirected back to localhost:3000
+
 
 insert into projects (project_name, user_id) values ('first_project', 1);
 
@@ -42,7 +44,8 @@ insert into tests (url,endpoint,contenttype,requesttype,requestbody,expectedress
 
 insert into tests (url,endpoint,contenttype,requesttype,requestbody,expectedresstatuscode,expectedresbody,project_id) values ('http://localhost:3000', '/test404', 'application/json', 'POST', 'testing request body', '404: Not Found', '', 1);
 
-#### TEST THE DB WITH THESE COMMANDS, SHOULD HAVE ZERO OR ONE USERS (DEPENDING IF AUTHENTICATION BUTTON HAS BEEN PRESSED SINCE DROPPING TABLES). SHOULD HAVE 1 PROJECT, 3 TESTS
+
+#### Test the db with these commands, should have one user, one project, and three tests
 
 
 select * from users;
