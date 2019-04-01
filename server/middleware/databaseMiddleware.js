@@ -1,9 +1,8 @@
 const databaseMiddleware = {};
 const pg = require('pg');
-const uri = 'postgres://admin:password123@localhost/endpoint';
-
-// Document all the information for tables and indexes
-// ** create unique index unique_github on users (github_handle); **
+// const uri = 'postgres://admin:password123@localhost/endpoint';
+// const uri = 'postgres://weepwqao:rLnedJ7IK8tJuFGMaFrVLDf_WhjgDL0n@isilo.db.elephantsql.com:5432/weepwqao';
+const uri = process.env.DATABASE_URL;
 
 databaseMiddleware.saveUserInfo = async (req, res, next) => {
   // Future improvement: to decrease
@@ -112,9 +111,8 @@ databaseMiddleware.getUserProjects = async (req, res, next) => {
     }
   }
 
-  console.log(tests);
-
   await client.end();
+
   res.json({
     isAuthenticated: true,
     breakPoint: 'successfully fetched tests',
