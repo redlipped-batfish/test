@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Header from '../component/Header';
+import Demo from '../component/Demo';
 import PrivateRoute from '../component/PrivateRoute';
 import Dashboard from '../component/Dashboard';
 import {
@@ -12,46 +13,78 @@ import {
 } from 'react-router-dom';
 
 class Main extends Component {
-  constructor(){
+  constructor() {
     super();
     this.state = {
-      authenticated = false,
+      authenticated: false,
       breakPoint: '',
-      projects: [],
-    }
+      projects: {},
+    };
     this.isAuthenticated = this.isAuthenticated.bind(this);
   }
 
-  isAuthenticated = () => {
+  isAuthenticated() {
     // fetch from server
     fetch('http://localhost:3000/isAuthenticated')
       .then(data => data.json())
       .then(data => {
         console.log(data);
         // deconstructed and parsed server data
-        let {authenticated, tests} = data;
-        let projects = [];
+        let { isAuthenticated, tests } = data;
+        let projects = {};
         tests.forEach(test => {
-          
-        })
+          let {
+            test_id,
+            url,
+            endpoint,
+            contenttype,
+            requesttype,
+            expectedresstatuscode,
+            expectedbody,
+            project_id,
+          } = test;
+          if (!Object.keys(projects).includes(project_id)) {
+            projects[project_id] = [];
+          }
+          projects[project_id].push({
+            test_id,
+            url,
+            endpoint,
+            contenttype,
+            requesttype,
+            expectedresstatuscode,
+            expectedbody,
+            project_id,
+          });
+        });
         // set authenticated property to what the server returns
-        this.setState({authenticated, projects});
+        this.setState({ authenticated: isAuthenticated, projects });
+        console.log(this.state.authenticated);
       });
   }
 
-  render() {
+  componentWillMount() {
     this.isAuthenticated();
+    console.log('Component did mount', this.state.authenticated);
+  }
+
+  render() {
     return (
       <div>
         hello i am main
-        <Header/>
+        <Header />
+        <Link to="/">Go to root</Link>
         <Switch>
-          {/* <Route path="/demo" component={Demo} exact /> */}
-          <PrivateRoute exact path="/" 
-            component={Dashboard} 
-            authentication={this.state.authenticated} 
-            projects={this.state.projects}/>
-          <Route path="*" component={() => '404 Not found'} /> {/* show random red lipped picture */}
+          <Route path="/demo" component={Demo} />
+          <PrivateRoute
+            exact
+            path="/"
+            component={Dashboard}
+            authentication={this.state.authenticated}
+            projects={this.state.projects}
+          />
+          <Route path="*" render={() => <div>'404 Not found' </div>} />{' '}
+          {/* show random red lipped picture */}
         </Switch>
       </div>
     );

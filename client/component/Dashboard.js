@@ -34,8 +34,6 @@ class Dashboard extends Component {
   constructor() {
     super();
     this.state = {
-      testsDB = [],
-      projects = {},
       url: '',
       endpoint: '',
       contentType: '',
@@ -135,6 +133,7 @@ class Dashboard extends Component {
 
     return (
       <div>
+        <h3> I am a Dashboard! </h3>
         <Container text>
           <Form>
             <Form.Field>

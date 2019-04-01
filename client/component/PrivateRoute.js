@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import Login from './Login';
-import Test from './Test';
-import Demo from './Demo';
+import Dashboard from '../component/Dashboard';
 import {
   Route,
   Link,
@@ -11,18 +9,21 @@ import {
   Switch,
 } from 'react-router-dom';
 
-export const PrivateRoute = ({ component: Component, ...rest }) => {
+const PrivateRoute = props => {
+  let { component: Component, ...rest } = props;
+  console.log('inside of conditional rendering ', props.authentication);
   return (
     <Route
       {...rest}
-      render={props => {
+      render={data => {
         if (props.authentication) {
-          return <Component {...props} />;
+          return <Component {...rest} />;
         } else {
-          return <Demo />;
-          // <Redirect to={{ pathname: '/demo', state: { from: props.location } }} />
+          return <Redirect to="/demo" />;
         }
       }}
     />
   );
 };
+
+export default PrivateRoute;
