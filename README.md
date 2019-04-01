@@ -2,17 +2,22 @@
 
 #### IN TERMINAL, WITH POSTGRES INSTALLED GLOBALLY:
 createdb endpoint
+
 psql endpoint
 
 #### IN PSQL CLI
 create role admin with login password 'password123';
+
 grant all privileges on database endpoint to admin;
+
 alter role admin superuser createrole createdb replication;
 
 #### THE FOLLOWING COMMANDS SHOULD BE RUN IN psql cli IN ORDER
 #### THIS ASSUMES YOU HAVE PSQL INSTALLED AND A USER CALLED 'admin' WITH A PASSWORD OF 'password123'
 drop table users;
+
 drop table projects;
+
 drop table tests;
 
 
@@ -34,5 +39,7 @@ insert into tests (url,endpoint,contenttype,requesttype,requestbody,expectedress
 #### TEST THE DB WITH THESE COMMANDS, SHOULD HAVE ZERO OR ONE USERS (DEPENDING IF AUTHENTICATION BUTTON HAS BEEN PRESSED SINCE DROPPING TABLES)
 #### SHOULD HAVE 1 PROJECT, 3 TESTS
 select * from users;
+
 select * from projects;
+
 select * from tests;
