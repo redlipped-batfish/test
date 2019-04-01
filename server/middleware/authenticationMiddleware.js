@@ -1,12 +1,14 @@
+require('dotenv').config();
 const authenticationMiddleware = {};
 const queryString = require('querystring');
 const randomstring = require('randomstring');
 const fetch = require('node-fetch');
 const pg = require('pg');
-const uri = 'postgres://admin:password123@localhost/endpoint';
-const app = require('../server');
+// const uri = 'postgres://admin:password123@localhost/endpoint';
+// const uri = 'postgres://weepwqao:rLnedJ7IK8tJuFGMaFrVLDf_WhjgDL0n@isilo.db.elephantsql.com:5432/weepwqao';
+const uri = process.env.DATABASE_URL;
 
-require('dotenv').config();
+const app = require('../server');
 
 authenticationMiddleware.generateRedirectURI = (req, res, next) => {
   const githubURI =
@@ -51,6 +53,11 @@ authenticationMiddleware.checkSession = async (req, res, next) => {
   }
   await client.end();
 
+  console.log(
+    'comparing user secret and db secret (sessionId)',
+    clientSecret,
+    queryResult,
+  );
   //if the user sends us a legit cookie, we run the next middleware (serve them their tests)
   if (clientSecret === queryResult.rows[0].session_id) {
     next();
