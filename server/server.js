@@ -70,5 +70,10 @@ app.post('/test', (req, res) => {
   res.json('success');
 });
 
+app.post('/test404', (req, res) => {
+  console.log('received test404 fetch POST');
+  res.json('success');
+});
+
 app.listen(port);
 module.exports = app;
