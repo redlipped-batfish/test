@@ -6,7 +6,7 @@ const uri = 'postgres://admin:password123@localhost/endpoint';
 // ** create unique index unique_github on users (github_handle); **
 
 databaseMiddleware.saveUserInfo = async (req, res, next) => {
-  // Future improvement: to decrease
+  // Future improvement: to decrease the need to insert when the user is already created and to update user information if it changes.
   console.log('We are saving');
   const client = new pg.Client(uri);
   await client.connect(error => {
