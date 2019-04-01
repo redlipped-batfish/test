@@ -20,11 +20,11 @@ alter role admin superuser createrole createdb replication;
 #### THE FOLLOWING COMMANDS SHOULD BE RUN IN psql cli IN ORDER, THIS ASSUMES YOU HAVE PSQL INSTALLED AND A USER CALLED 'admin' WITH A PASSWORD OF 'password123'
 
 
-drop table users;
+drop table tests;
 
 drop table projects;
 
-drop table tests;
+drop table users;
 
 
 create table users (user_id SERIAL PRIMARY KEY, name VARCHAR, email VARCHAR, github_Handle VARCHAR, session_ID VARCHAR, access_token VARCHAR, user_avatar VARCHAR);
