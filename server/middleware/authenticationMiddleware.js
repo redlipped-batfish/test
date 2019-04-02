@@ -5,7 +5,6 @@ const randomstring = require('randomstring');
 const fetch = require('node-fetch');
 const pg = require('pg');
 const uri = 'postgres://admin:password123@localhost/endpoint';
-// const uri = 'postgres://weepwqao:rLnedJ7IK8tJuFGMaFrVLDf_WhjgDL0n@isilo.db.elephantsql.com:5432/weepwqao';
 // const uri = process.env.DATABASE_URL;
 
 const app = require('../server');
@@ -21,53 +20,6 @@ authenticationMiddleware.generateRedirectURI = (req, res, next) => {
     });
   res.locals.githubURI = githubURI;
   return next();
-};
-
-authenticationMiddleware.checkSession = async (req, res, next) => {
-  //talk to Luis about the field namesto exactly send the request body
-  console.log('checking session');
-  let queryResult;
-  const clientSecret = req.cookies.secret;
-  const client = new pg.Client(uri);
-  await client.connect(error => {
-    if (error) {
-      res.json({
-        isAuthenticated: false,
-        breakPoint: 'initial checksession db connection',
-      });
-      return console.error('could not connect to postgres', err);
-    }
-  });
-
-  //WARNING: filter string must be wrapped in quotes, see below
-  const query = `SELECT session_id FROM users WHERE session_id = '${clientSecret}'`;
-  try {
-    queryResult = await client.query(query);
-  } catch (error) {
-    console.log('sessionId lookup failed.', error);
-    res.json({
-      isAuthenticated: false,
-      breakPoint: 'user session_id lookup db query',
-    });
-    return;
-  }
-  await client.end();
-
-  console.log(
-    'comparing user secret and db secret (sessionId)',
-    clientSecret,
-    queryResult,
-  );
-  //if the user sends us a legit cookie, we run the next middleware (serve them their tests)
-  if (clientSecret === queryResult.rows[0].session_id) {
-    next();
-  } else {
-    console.log('sessionID mismatch');
-    res.json({
-      isAuthenticated: false,
-      breakPoint: 'client secret mismatched with database secret',
-    });
-  }
 };
 
 authenticationMiddleware.getAccessToken = (req, res, next) => {
@@ -130,6 +82,52 @@ authenticationMiddleware.createSession = (req, res, next) => {
   });
   res.cookie('secret', res.locals.sessionId, { maxAge: '3600000' });
   next();
+};
+
+authenticationMiddleware.checkSession = async (req, res, next) => {
+  console.log('checking session');
+  let queryResult;
+  const clientSecret = req.cookies.secret;
+  const client = new pg.Client(uri);
+  await client.connect(error => {
+    if (error) {
+      res.json({
+        isAuthenticated: false,
+        breakPoint: 'initial checksession db connection',
+      });
+      return console.error('could not connect to postgres', err);
+    }
+  });
+
+  //WARNING: filter string must be wrapped in quotes, see 'clientSecret' below
+  const query = `SELECT session_id FROM users WHERE session_id = '${clientSecret}'`;
+  try {
+    queryResult = await client.query(query);
+  } catch (error) {
+    console.log('sessionId lookup failed.', error);
+    res.json({
+      isAuthenticated: false,
+      breakPoint: 'user session_id lookup db query',
+    });
+    return;
+  }
+  await client.end();
+
+  console.log(
+    'comparing user secret and db secret (sessionId)',
+    clientSecret,
+    queryResult,
+  );
+  //if the user sends us a legit cookie, we run the next middleware (serve them their tests)
+  if (clientSecret === queryResult.rows[0].session_id) {
+    next();
+  } else {
+    console.log('sessionID mismatch');
+    res.json({
+      isAuthenticated: false,
+      breakPoint: 'client secret mismatched with database secret',
+    });
+  }
 };
 
 module.exports = authenticationMiddleware;

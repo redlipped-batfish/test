@@ -17,7 +17,7 @@ const {
 } = require('./middleware/databaseMiddleware');
 const port = 3000;
 
-// global variables
+// global middleware
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
