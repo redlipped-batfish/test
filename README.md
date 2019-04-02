@@ -49,3 +49,15 @@ select \* from users;
 select \* from projects;
 
 select \* from tests;
+
+
+## Running the project:
+
+
+Once the database stuff above is done, in the project directory run:
+
+npm install
+
+npm run dev
+
+(if 'npm run dev' doesn't work, try 'npm run build' followed by 'npm start' then navigate to localhost:3000)
