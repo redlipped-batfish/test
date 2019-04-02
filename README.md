@@ -1,4 +1,4 @@
-![end.](https://i.imgur.com/ASSmsuI.png =150x150)
+![end.](https://i.imgur.com/ASSmsuI.png)
 
 ## Instructions for testing of Endpoint with localhost:3000 and a locally installed postgresql database
 
