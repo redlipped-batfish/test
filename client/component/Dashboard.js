@@ -10,8 +10,7 @@ import {
   Table,
 } from 'semantic-ui-react';
 
-// take care of logout
-
+// TODO: take care of logout
 const requestTypes = [
   { key: 1, text: 'GET', value: 'GET' },
   { key: 2, text: 'POST', value: 'POST' },
@@ -50,7 +49,6 @@ class Dashboard extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props);
     this.setState({ projects: this.props.projects });
   }
 
@@ -114,38 +112,11 @@ class Dashboard extends Component {
     //     });
     //     return data;
     //   })
-    //   .then(tests =>
-    //     tests.forEach(test => {
-    //       console.log(test);
-    //       testResponseBody = test.body;
 
-    //       if (
-    //         testStatusCode ===
-    //           parseInt(test.expectedResStatusCode.slice(0, 3)) &&
-    //         testResponseBody === test.expectedResBody
-    //       ) {
-    //         console.log('successful test!');
-    //         testsArray.push({
-    //           ...test,
-    //           testComplete: true,
-    //           testResult: true,
-    //           testResponse: testResponseBody,
-    //         });
-    //       } else {
-    //         console.log('test failed!');
-    //         testsArray.push({
-    //           ...test,
-    //           testComplete: true,
-    //           testResult: false,
-    //           testResponse: testResponseBody,
-    //         });
-    //       }
-    //     }),
-    //   );
     const newState = { ...state };
     newState.firstProject = testsArray;
+    // console.log('These are the results:', testsArray);
     // this.setState(newState);
-    console.log('This are the results:', testsArray);
   }
 
   handleChange(event, name) {
@@ -165,8 +136,6 @@ class Dashboard extends Component {
   }
 
   runTest(state) {
-    console.log('state:', state);
-
     let testStatusCode = null;
     let testResponseBody = null;
 
@@ -210,28 +179,27 @@ class Dashboard extends Component {
     //scan the state for test state(s)
     //generate an array of divs to add to the table
     //IN THE DEMO THERE IS ONLY ONE ALLOWED TEST, SO NO ARRAYS IN STATE
+    //TODO: for authenticated user, should iterate thru their projects and assemble a table
+    //their projects should exist in the state.projects object
     let testsArr = [];
-    if (true) {
-      console.log('props in render catman ', this.props);
+    if (this.state.testResult) {
       let color = null;
       let name = null;
       let result = null;
-      console.log(name, color);
       let key = 1;
       for (let test of this.props.projects[1]) {
-        console.log('sdhfkjfdjksfskjf', test);
         key++;
-        color = test.testResult ? 'green' : 'red';
-        name = test.testResult ? 'check' : 'close';
-        result = test.testResult ? 'positive' : 'negative';
+        color = this.state.testResult ? 'green' : 'red';
+        name = this.state.testResult ? 'check' : 'close';
+        result = this.state.testResult ? 'positive' : 'negative';
         testsArr.push(
           <Table.Row key={key}>
             <Table.HeaderCell>{test.endpoint}</Table.HeaderCell>
-            <Table.HeaderCell>{test.requesttype}</Table.HeaderCell>
-            <Table.HeaderCell>{'legit test'}</Table.HeaderCell>
-            <Table.HeaderCell>{'legit test'}</Table.HeaderCell>
+            <Table.HeaderCell>{test.endpoint}</Table.HeaderCell>
+            <Table.HeaderCell>{test.endpoint}</Table.HeaderCell>
+            <Table.HeaderCell>{test.endpoint}</Table.HeaderCell>
             <Table.HeaderCell>
-              <Icon name={'check'} color={'green'} inverted circular />
+              <Icon name={name} color={color} inverted circular />
             </Table.HeaderCell>
           </Table.Row>,
         );
@@ -240,7 +208,6 @@ class Dashboard extends Component {
 
     return (
       <div>
-        {/* <h3> I am a Dashboard! </h3> */}
         <Container text>
           <Form>
             <Form.Field>

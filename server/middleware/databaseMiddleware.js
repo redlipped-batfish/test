@@ -1,7 +1,6 @@
 const databaseMiddleware = {};
 const pg = require('pg');
 const uri = 'postgres://admin:password123@localhost/endpoint';
-// const uri = 'postgres://weepwqao:rLnedJ7IK8tJuFGMaFrVLDf_WhjgDL0n@isilo.db.elephantsql.com:5432/weepwqao';
 // const uri = process.env.DATABASE_URL;
 
 databaseMiddleware.saveUserInfo = async (req, res, next) => {
@@ -47,7 +46,7 @@ databaseMiddleware.saveUserInfo = async (req, res, next) => {
 
 databaseMiddleware.getUserProjects = async (req, res, next) => {
   //this function queries the db 3x in succession to get user -> projects -> tests as a result object
-  //might want to refactor to use a sql join statement at some point
+  //might want to refactor to use a sql join statement
   const client = new pg.Client(uri);
   await client.connect(error => {
     if (error) {

@@ -229,6 +229,7 @@ class Demo extends Component {
                 <Table.HeaderCell>Actual Response</Table.HeaderCell>
                 <Table.HeaderCell />
               </Table.Row>
+              {/* test results table is rendered here: */}
               {testsArr}
             </Table.Header>
             <Table.Body />
