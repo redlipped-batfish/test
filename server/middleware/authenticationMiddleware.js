@@ -95,7 +95,7 @@ authenticationMiddleware.checkSession = async (req, res, next) => {
         isAuthenticated: false,
         breakPoint: 'initial checksession db connection',
       });
-      return console.error('could not connect to postgres', err);
+      return console.error('could not connect to postgres', error);
     }
   });
 
